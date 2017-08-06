@@ -1,0 +1,26 @@
+# https://docs.microsoft.com/en-us/aspnet/core/publishing/linuxproduction#monitoring-our-application
+
+[Unit]
+Description=vRadio Service
+Documentation=
+
+Wants=network.target
+After=network.target
+
+[Service]
+User=pi
+Group=pi
+Nice=5
+KillMode=control-group
+SuccessExitStatus=0 1
+
+WorkingDirectory=/home/pi/vradio
+ExecStart=/opt/dotnet/dotnet /home/pi/vradio/YamahaInetRadioDncore.dll
+Restart=always
+RestartSec=10
+SyslogIdentifier=dotnet-vradio
+ExecReload=/bin/kill -HUP $MAINPID
+Environment=ASPNETCORE_ENVIRONMENT=Production
+
+[Install]
+WantedBy=multi-user.target
