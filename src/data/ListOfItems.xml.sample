@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<ListOfItems>
+    <ItemCount>3</ItemCount>
+    <!-- <Item>
+        <ItemType>Previous</ItemType>
+        <UrlPrevious>http://radioyamaha.vtuner.com/setupapp/yamaha/asp/BrowseXML/loginXML.asp?gofile=</UrlPrevious>
+        <UrlPreviousBackUp>http://radioyamaha2.vtuner.com/setupapp/yamaha/asp/BrowseXML/loginXML.asp?gofile=</UrlPreviousBackUp>
+    </Item> -->
+    <Item>
+        <ItemType>Dir</ItemType>
+        <StationName>Techno</StationName>
+        <UrlDir>http://radioyamaha.vtuner.com/setupapp/yamaha/asp/browsexml/FavXML.asp?empty=&amp;sFavName=Techno</UrlDir>
+        <UrlDirBackUp>http://radioyamaha2.vtuner.com/setupapp/yamaha/asp/browsexml/FavXML.asp?empty=&amp;sFavName=Techno</UrlDirBackUp>
+        <DirCount>8</DirCount>
+    </Item>
+    <Item> <!-- minimal example -->
+        <ItemType>Station</ItemType>
+        <StationName>Deutschlandfunk</StationName>
+        <StationUrl>http://dradio_mp3_dlf_m.akacast.akamaistream.net/7/249/142684/v1/gnl.akacast.akamaistream.net/dradio_mp3_dlf_m</StationUrl>
+    </Item>
+    <Item> <!-- complete example -->
+        <ItemType>Station</ItemType>
+        <StationId>5709</StationId>
+        <StationName>Radio Swiss Jazz 98.1 FM</StationName>
+        <StationUrl>http://www.radioswissjazz.ch/live/aacp.m3u</StationUrl>
+        <StationDesc>Jazz, Soul, Blues - nonstop: 24 Stunden reiner Genuss!</StationDesc>
+        <Logo>http://item.radio456.com/007452/logo/logo-5709.jpg</Logo>
+        <StationFormat>Jazz/Blues</StationFormat>
+        <StationLocation>Switzerland</StationLocation>
+        <StationBandWidth>128</StationBandWidth>
+        <StationMime>MP3</StationMime>
+        <Relia>5</Relia>
+        <Bookmark>http://radioyamaha.vtuner.com/setupapp/yamaha/asp/browsexml/RemoveFavs.asp?empty=&amp;ID=5709&amp;sFavName=Radio</Bookmark>
+    </Item>
+</ListOfItems>
