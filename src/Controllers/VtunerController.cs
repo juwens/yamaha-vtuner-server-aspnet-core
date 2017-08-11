@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using VtnrNetRadioServer.Contract;
-using VtnrNetRadioServer.Models;
 
 namespace VtnrNetRadioServer.Controllers
 {

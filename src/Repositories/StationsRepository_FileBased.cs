@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Xml.Serialization;
 using VtnrNetRadioServer.Contract;
 
-namespace VtnrNetRadioServer.Models
+namespace VtnrNetRadioServer.Repositories
 {
     public class StationsRepository_FileBased : IStationsRepository
     {

@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using VtnrNetRadioServer.Contract;
-using VtnrNetRadioServer.Models;
+using VtnrNetRadioServer.Repositories;
 
 namespace VtnrNetRadioServer
 {

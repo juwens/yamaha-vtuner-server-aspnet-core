@@ -1,12 +1,7 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using NetInfo = System.Net.NetworkInformation;
 using System.Net.Sockets;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using VtnrNetRadioServer.Models;
 
 namespace VtnrNetRadioServer.Helper
 {
