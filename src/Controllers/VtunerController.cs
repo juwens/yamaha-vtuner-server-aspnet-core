@@ -6,18 +6,20 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using VtnrNetRadioServer.Contract;
 using VtnrNetRadioServer.Models;
 
 namespace VtnrNetRadioServer.Controllers
 {
     public class VtunerController : Controller
     {
-        public VtunerController (IOptions<VtunerConfig> cfg, StationsRepository repo)  {
+        private IStationsRepository _stationsRepo;
+
+        public VtunerController (IOptions<VtunerConfig> cfg, IStationsRepository repo)  {
             this._cfg = cfg.Value;
             this._stationsRepo = repo;
         }
 
-        private StationsRepository _stationsRepo;
         private VtunerConfig _cfg;
 
         [HttpGet("/setupapp/yamaha/asp/browsexml/FavXML.asp")]

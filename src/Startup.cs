@@ -5,6 +5,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using VtnrNetRadioServer.Contract;
+using VtnrNetRadioServer.Models;
 
 namespace VtnrNetRadioServer
 {
@@ -35,7 +37,7 @@ namespace VtnrNetRadioServer
             var cfgSection = Configuration.GetSection(nameof(VtunerConfig));
             services.Configure<VtunerConfig>(cfgSection);
             
-            services.AddTransient(typeof(Models.StationsRepository));
+            services.AddTransient<IStationsRepository, StationsRepository_FileBased>();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)

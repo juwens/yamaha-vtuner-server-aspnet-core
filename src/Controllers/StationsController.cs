@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using VtnrNetRadioServer.Contract;
 using VtnrNetRadioServer.Models;
 
 namespace VtnrNetRadioServer.Controllers
@@ -12,12 +13,13 @@ namespace VtnrNetRadioServer.Controllers
      */
     public class StationsController : Controller
     {
-        public StationsController(StationsRepository sationsRepo)
+        private IStationsRepository _stationsRepo;
+        public StationsController(IStationsRepository sationsRepo)
         {
             this._stationsRepo = sationsRepo;
         }
 
-        private StationsRepository _stationsRepo;
+        
 
         public ActionResult Index()
         {
