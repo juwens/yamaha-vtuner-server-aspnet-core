@@ -1,0 +1,13 @@
+@model IEnumerable<VtnrNetRadioServer.Contract.ListOfItemsItem>
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<ListOfItems>
+    <ItemCount>@Model.Count()</ItemCount>
+    @foreach (var item in Model)
+    {
+    <Item> <!-- minimal example -->
+        <ItemType>@item.ItemType</ItemType>
+        <StationName>@item.StationName</StationName>
+        <StationUrl>@item.StationUrl</StationUrl>
+    </Item>
+    }
+</ListOfItems>
