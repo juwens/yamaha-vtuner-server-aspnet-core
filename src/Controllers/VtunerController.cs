@@ -5,14 +5,15 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using VtnrNetRadioServer.Models;
 
 namespace VtnrNetRadioServer.Controllers
 {
     public class VtunerController : Controller
     {
-        public VtunerController (VtunerConfig cfg, StationsRepository repo)  {
-            this._cfg = cfg;
+        public VtunerController (IOptions<VtunerConfig> cfg, StationsRepository repo)  {
+            this._cfg = cfg.Value;
             this._stationsRepo = repo;
         }
 
