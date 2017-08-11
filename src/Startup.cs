@@ -12,23 +12,21 @@ namespace VtnrNetRadioServer
 {
     public class Startup
     {
-        public IConfigurationRoot Configuration { get; }
+        public IConfiguration Configuration { get; }
 
-        public Startup(IHostingEnvironment env)
+        private ILogger<Startup> _logger;
+
+        public Startup(IConfiguration conf, ILogger<Startup> logger)
         {
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
-                .AddEnvironmentVariables();
-            Configuration = builder.Build();
+            Configuration = conf;
+            this._logger = logger;
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            System.Console.WriteLine("Startup.cs->ConfigureServices");
+            _logger.LogDebug("ConfigureServices()");
 
             // Add framework services.
             services.AddMvc();
@@ -40,13 +38,10 @@ namespace VtnrNetRadioServer
             services.AddTransient<IStationsRepository, StationsRepository_FileBased>();
         }
 
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            System.Console.WriteLine("Startup.cs->Configure");
-            System.Console.WriteLine("IsDev: " + env.IsDevelopment());
-
-            loggerFactory.AddConsole(Configuration.GetSection("Logging"));
-            loggerFactory.AddDebug();
+            _logger.LogDebug("Configure()");
+            _logger.LogDebug("IsDev: " + env.IsDevelopment());
 
             app.UseDeveloperExceptionPage();
 
