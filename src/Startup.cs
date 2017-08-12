@@ -35,7 +35,7 @@ namespace VtnrNetRadioServer
             var cfgSection = Configuration.GetSection(nameof(VtunerConfig));
             services.Configure<VtunerConfig>(cfgSection);
             
-            services.AddTransient<IStationsRepository, StationsRepository_FileBased>();
+            services.AddTransient<IStationsRepository, StationsRepository_Firebase>();
         }
 
          public void Configure(IApplicationBuilder app, IHostingEnvironment env)
