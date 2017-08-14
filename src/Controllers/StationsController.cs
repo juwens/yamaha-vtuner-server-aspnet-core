@@ -14,12 +14,17 @@ namespace VtnrNetRadioServer.Controllers
             this._stationsRepo = sationsRepo;
         }
 
-        
-
         public ActionResult Index()
         {
             var stations = _stationsRepo.GetAll();
             return View(stations);
+        }
+
+        [HttpPost]
+        public ActionResult Add(string name, string url)
+        {
+            _stationsRepo.Add(name, url);
+            return Redirect(nameof(Index));
         }
     }
 }

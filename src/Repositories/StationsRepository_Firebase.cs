@@ -35,9 +35,15 @@ namespace VtnrNetRadioServer.Repositories
                 .Wait();
         }
 
-        public void Add(string stationName, string stationUrl)
+        public void Add(string name, string url)
         {
-             Test();
+             _conf.databaseURL
+                .AppendPathSegments(_conf.baseRef, "stations.json")
+                .SetQueryParams(new {auth = _conf.dbSecret})
+                .PostJsonAsync(new ListOfItemsItem{
+                    StationName = name,
+                    StationUrl = url
+                }).Wait();
         }
 
         public IEnumerable<ListOfItemsItem> GetAll()
