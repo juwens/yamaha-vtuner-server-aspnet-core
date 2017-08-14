@@ -24,5 +24,10 @@ namespace VtnrNetRadioServer.Repositories
 
             return listOfItems.Item.Where(x => x.ItemType == "Station").ToList();
         }
+
+        public void Add(string stationName, string stationUrl)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -10,5 +10,6 @@ namespace VtnrNetRadioServer.Contract
     public interface IStationsRepository
     {
         IEnumerable<ListOfItemsItem> GetAll();
+        void Add(string stationName, string stationUrl);
     }
 }
