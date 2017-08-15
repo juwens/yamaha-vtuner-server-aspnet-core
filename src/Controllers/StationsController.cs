@@ -26,5 +26,12 @@ namespace VtnrNetRadioServer.Controllers
             _stationsRepo.Add(name, url);
             return Redirect(nameof(Index));
         }
+
+        [HttpPost]
+        public ActionResult Delete(string id)
+        {
+            _stationsRepo.Delete(id);
+            return Redirect(nameof(Index));
+        }
     }
 }

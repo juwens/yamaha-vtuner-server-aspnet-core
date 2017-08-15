@@ -1,4 +1,4 @@
-@model IEnumerable<VtnrNetRadioServer.Contract.ListOfItemsItem>
+@model IEnumerable<VtnrNetRadioServer.Repositories.ItemContainer>
 @{
     Layout = "_Layout";
 }
@@ -17,15 +17,19 @@
 </style>
 
 <div style="max-width: 400px;">
-    @foreach (var station in Model)
+    @foreach (var itemContainer in Model)
     {
         <div style="display: flex; margin: 5px; align-items: flex-start;">
             <div style="display: flex; flex-grow: 1;">
-                @Html.ActionLink(station.StationName, "Edit", new { id = station.StationName })
+                @Html.ActionLink(itemContainer.Key, "Edit", new { id = itemContainer.Item.StationName })
             </div>
             <div style="display: flex; flex-grow: 0;">
-                <button style="margin: 0 5px;">&uArr;</button>
-                <button style="margin: 0 5px;">&dArr;</button>
+                <form asp-controller="Stations" method="POST">
+                    <input name="id" type="hidden" value="@itemContainer.Key" />
+                    <button style="margin: 0 5px;" asp-action="Delete">&trash;</button>
+                    <button style="margin: 0 5px;" asp-action="Up">&uArr;</button>
+                    <button style="margin: 0 5px;" asp-action="Down">&dArr;</button>
+                </form>
             </div>
         </div>
         <hr />

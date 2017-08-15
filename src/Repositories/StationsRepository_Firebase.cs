@@ -16,6 +16,11 @@ namespace VtnrNetRadioServer.Repositories
 {
     public class StationsRepository_Firebase : IStationsRepository
     {
+        private class PostResponse
+        {
+            public string name { get; set; }
+        }
+
         private readonly ILogger _logger;
         private readonly FirebaseConfig _conf;
 
@@ -28,7 +33,7 @@ namespace VtnrNetRadioServer.Repositories
         }
 
         public void Test() {
-                _conf.databaseURL
+            _conf.databaseURL
                 .AppendPathSegments(_conf.baseRef, "stations-order.json")
                 .SetQueryParams(new {auth = _conf.dbSecret})
                 .PutJsonAsync(new [] {"a", "b", "c", "d"})
@@ -37,16 +42,43 @@ namespace VtnrNetRadioServer.Repositories
 
         public void Add(string name, string url)
         {
-             _conf.databaseURL
+             var res = _conf.databaseURL
                 .AppendPathSegments(_conf.baseRef, "stations.json")
                 .SetQueryParams(new {auth = _conf.dbSecret})
                 .PostJsonAsync(new ListOfItemsItem{
                     StationName = name,
                     StationUrl = url
-                }).Wait();
+                })
+                .ReceiveJson<PostResponse>()
+                .Result;
+            var keys = GetKeysOrderedAsync().Result.ToList();
+            keys.Add(res.name);
+            SetKeyOrderAsync(keys.ToArray()).Wait();
         }
 
-        public IEnumerable<ListOfItemsItem> GetAll()
+        private async Task<List<string>> GetAllKeysUnorderedAsync()
+        {
+            var items = await _conf.databaseURL
+                .AppendPathSegments(_conf.baseRef, "stations.json")
+                .SetQueryParams(new {
+                    auth = _conf.dbSecret,
+                    shallow = true
+                })
+                .GetJsonAsync<Dictionary<string, bool>>();
+            return items.Keys.ToList();
+        }
+
+        private async Task SetKeyOrderAsync(string[] keys)
+        {
+            var res = await _conf.databaseURL
+                .AppendPathSegments(_conf.baseRef, "stations-order.json")
+                .SetQueryParams(new {
+                    auth = _conf.dbSecret
+                })
+                .PutJsonAsync(keys);
+        }
+
+        public IEnumerable<ItemContainer> GetAll()
         {
             var sw = Stopwatch.StartNew();
             
@@ -55,11 +87,39 @@ namespace VtnrNetRadioServer.Repositories
                 .AppendPathSegments(_conf.baseRef, "stations.json")
                 .SetQueryParams(new {auth = _conf.dbSecret})
                 .GetJsonAsync<Dictionary<string, ListOfItemsItem>>()
-                .Result.Select(x => x.Value);
+                .Result;
+            
+            var orderedKeys = GetKeysOrderedAsync().Result;
+            var res = orderedKeys
+                .Select(x => new ItemContainer {
+                    Key = x,
+                    Item = items[x]
+                }).ToList();
 
             _logger.LogDebug("ms: " + sw.ElapsedMilliseconds);
 
-            return items;
+            return res;
+        }
+
+        public void Delete(string id)
+        {
+            var keys = GetKeysOrderedAsync().Result.ToList();
+            keys.Remove(id);
+            SetKeyOrderAsync(keys.ToArray()).Wait();
+
+            _conf.databaseURL
+                .AppendPathSegments(_conf.baseRef, "stations", id + ".json")
+                .SetQueryParams(new {auth = _conf.dbSecret})
+                .DeleteAsync()
+                .Wait();
+        }
+
+        private async Task<string[]> GetKeysOrderedAsync(){
+            var res = _conf.databaseURL
+                .AppendPathSegments(_conf.baseRef, "stations-order.json")
+                .SetQueryParams(new {auth = _conf.dbSecret})
+                .GetJsonAsync<string[]>();
+            return (await res) ?? new string[0];
         }
     }
 }

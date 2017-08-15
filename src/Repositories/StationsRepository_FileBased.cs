@@ -14,7 +14,7 @@ namespace VtnrNetRadioServer.Repositories
         private string ItemsXml => System.IO.File.ReadAllText(XmlPath);
         private XmlSerializer xmlSerializer = new XmlSerializer(typeof(ListOfItems));
 
-        public IEnumerable<ListOfItemsItem> GetAll()
+        public IEnumerable<ItemContainer> GetAll()
         {
             ListOfItems listOfItems;
             using (var reader = File.OpenRead(XmlPath))
@@ -22,10 +22,22 @@ namespace VtnrNetRadioServer.Repositories
                 listOfItems = (ListOfItems)xmlSerializer.Deserialize(reader);
             }
 
-            return listOfItems.Item.Where(x => x.ItemType == "Station").ToList();
+            return listOfItems.Item
+                .Where(x => x.ItemType == "Station")
+                .Select(x => new ItemContainer
+                {
+                    Key = x.StationId.ToString(),
+                    Item = x
+                })
+                .ToList();
         }
 
         public void Add(string stationName, string stationUrl)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Delete(string id)
         {
             throw new NotImplementedException();
         }
