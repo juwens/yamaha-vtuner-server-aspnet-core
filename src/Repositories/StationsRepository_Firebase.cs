@@ -79,21 +79,24 @@ namespace VtnrNetRadioServer.Repositories
         public async Task<IEnumerable<ItemContainer>> GetAllAsync()
         {
             var sw = Stopwatch.StartNew();
-            
             // http://tmenier.github.io/Flurl/fluent-http/
             var items = await _conf.databaseURL
                 .AppendPathSegments(_conf.baseRef, "stations.json")
                 .SetQueryParams(new {auth = _conf.dbSecret})
                 .GetJsonAsync<Dictionary<string, ListOfItemsItem>>();
+            sw.Stop();
+            _logger.LogCritical("stations ms: " + sw.ElapsedMilliseconds);
             
+            sw.Reset();
+            sw.Start();
             var orderedKeys = await GetKeysOrderedAsync();
             var res = orderedKeys
                 .Select(x => new ItemContainer {
                     Key = x,
                     Item = items[x]
                 }).ToList();
-
-            _logger.LogDebug("ms: " + sw.ElapsedMilliseconds);
+            sw.Stop();
+            _logger.LogCritical("stations-order ms: " + sw.ElapsedMilliseconds);
 
             return res;
         }

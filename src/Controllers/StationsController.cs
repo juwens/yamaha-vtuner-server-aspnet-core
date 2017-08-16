@@ -1,5 +1,8 @@
+using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using VtnrNetRadioServer.Contract;
 
 namespace VtnrNetRadioServer.Controllers
@@ -9,29 +12,35 @@ namespace VtnrNetRadioServer.Controllers
      */
     public class StationsController : Controller
     {
-        private IStationsRepository _stationsRepo;
-        public StationsController(IStationsRepository sationsRepo)
+        private readonly IStationsRepository _stationsRepo;
+        private readonly ILogger<StationsController> _logger;
+
+        public StationsController(IStationsRepository sationsRepo, ILogger<StationsController> logger)
         {
             this._stationsRepo = sationsRepo;
+            this._logger = logger;
         }
 
         public async Task<ActionResult> Index()
         {
+            var sw = Stopwatch.StartNew();
             var stations = await _stationsRepo.GetAllAsync();
+            sw.Stop();
+            _logger.LogCritical("GetAll ms: " + sw.ElapsedMilliseconds);
             return View(stations);
         }
 
         [HttpPost]
-        public ActionResult Add(string name, string url)
+        public async Task<ActionResult> Add(string name, string url)
         {
-            _stationsRepo.AddAsync(name, url);
+            await _stationsRepo.AddAsync(name, url);
             return Redirect(nameof(Index));
         }
 
         [HttpPost]
-        public ActionResult Delete(string id)
+        public async Task<ActionResult> Delete(string id)
         {
-            _stationsRepo.DeleteAsync(id);
+            await _stationsRepo.DeleteAsync(id);
             return Redirect(nameof(Index));
         }
     }
