@@ -46,13 +46,6 @@ namespace VtnrNetRadioServer.Repositories
             this._client = client;
         }
 
-        public async Task Test() {
-            await _conf.databaseURL
-                .AppendPathSegments(_conf.baseRef, "stations-order.json")
-                .SetQueryParams(new {auth = _conf.dbSecret})
-                .PutJsonAsync(new [] {"a", "b", "c", "d"});
-        }
-
         public async Task AddAsync(string name, string url)
         {
              var res = await 
@@ -65,7 +58,7 @@ namespace VtnrNetRadioServer.Repositories
                     StationUrl = url
                 })
                 .ReceiveJson<PostResponse>();
-                
+
             var keys = (await GetKeysOrderedAsync()).ToList();
             keys.Add(res.name);
             await SetKeyOrderAsync(keys.ToArray());
