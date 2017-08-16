@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using VtnrNetRadioServer.Contract;
 
@@ -14,23 +15,23 @@ namespace VtnrNetRadioServer.Controllers
             this._stationsRepo = sationsRepo;
         }
 
-        public ActionResult Index()
+        public async Task<ActionResult> Index()
         {
-            var stations = _stationsRepo.GetAll();
+            var stations = await _stationsRepo.GetAllAsync();
             return View(stations);
         }
 
         [HttpPost]
         public ActionResult Add(string name, string url)
         {
-            _stationsRepo.Add(name, url);
+            _stationsRepo.AddAsync(name, url);
             return Redirect(nameof(Index));
         }
 
         [HttpPost]
         public ActionResult Delete(string id)
         {
-            _stationsRepo.Delete(id);
+            _stationsRepo.DeleteAsync(id);
             return Redirect(nameof(Index));
         }
     }

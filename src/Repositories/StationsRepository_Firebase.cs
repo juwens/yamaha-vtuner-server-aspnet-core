@@ -32,28 +32,26 @@ namespace VtnrNetRadioServer.Repositories
             this._conf = conf.Value;
         }
 
-        public void Test() {
-            _conf.databaseURL
+        public async Task Test() {
+            await _conf.databaseURL
                 .AppendPathSegments(_conf.baseRef, "stations-order.json")
                 .SetQueryParams(new {auth = _conf.dbSecret})
-                .PutJsonAsync(new [] {"a", "b", "c", "d"})
-                .Wait();
+                .PutJsonAsync(new [] {"a", "b", "c", "d"});
         }
 
-        public void Add(string name, string url)
+        public async Task AddAsync(string name, string url)
         {
-             var res = _conf.databaseURL
+             var res = await _conf.databaseURL
                 .AppendPathSegments(_conf.baseRef, "stations.json")
                 .SetQueryParams(new {auth = _conf.dbSecret})
                 .PostJsonAsync(new ListOfItemsItem{
                     StationName = name,
                     StationUrl = url
                 })
-                .ReceiveJson<PostResponse>()
-                .Result;
+                .ReceiveJson<PostResponse>();
             var keys = GetKeysOrderedAsync().Result.ToList();
             keys.Add(res.name);
-            SetKeyOrderAsync(keys.ToArray()).Wait();
+            await SetKeyOrderAsync(keys.ToArray());
         }
 
         private async Task<List<string>> GetAllKeysUnorderedAsync()
@@ -78,18 +76,17 @@ namespace VtnrNetRadioServer.Repositories
                 .PutJsonAsync(keys);
         }
 
-        public IEnumerable<ItemContainer> GetAll()
+        public async Task<IEnumerable<ItemContainer>> GetAllAsync()
         {
             var sw = Stopwatch.StartNew();
             
             // http://tmenier.github.io/Flurl/fluent-http/
-            var items = _conf.databaseURL
+            var items = await _conf.databaseURL
                 .AppendPathSegments(_conf.baseRef, "stations.json")
                 .SetQueryParams(new {auth = _conf.dbSecret})
-                .GetJsonAsync<Dictionary<string, ListOfItemsItem>>()
-                .Result;
+                .GetJsonAsync<Dictionary<string, ListOfItemsItem>>();
             
-            var orderedKeys = GetKeysOrderedAsync().Result;
+            var orderedKeys = await GetKeysOrderedAsync();
             var res = orderedKeys
                 .Select(x => new ItemContainer {
                     Key = x,
@@ -101,17 +98,16 @@ namespace VtnrNetRadioServer.Repositories
             return res;
         }
 
-        public void Delete(string id)
+        public async Task DeleteAsync(string id)
         {
             var keys = GetKeysOrderedAsync().Result.ToList();
             keys.Remove(id);
             SetKeyOrderAsync(keys.ToArray()).Wait();
 
-            _conf.databaseURL
+            await _conf.databaseURL
                 .AppendPathSegments(_conf.baseRef, "stations", id + ".json")
                 .SetQueryParams(new {auth = _conf.dbSecret})
-                .DeleteAsync()
-                .Wait();
+                .DeleteAsync();
         }
 
         private async Task<string[]> GetKeysOrderedAsync(){

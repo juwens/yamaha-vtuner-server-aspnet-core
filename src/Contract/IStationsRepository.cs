@@ -10,8 +10,8 @@ namespace VtnrNetRadioServer.Contract
 {
     public interface IStationsRepository
     {
-        IEnumerable<ItemContainer> GetAll();
-        void Add(string stationName, string stationUrl);
-        void Delete(string id);
+        Task<IEnumerable<ItemContainer>> GetAllAsync();
+        Task AddAsync(string stationName, string stationUrl);
+        Task DeleteAsync(string id);
     }
 }
