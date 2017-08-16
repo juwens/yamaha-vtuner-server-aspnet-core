@@ -39,6 +39,7 @@ namespace VtnrNetRadioServer
             services.Configure<FirebaseConfig>(Configuration.GetSection(nameof(FirebaseConfig)));
             
             services.AddTransient<IStationsRepository, StationsRepository_Firebase>();
+            services.AddSingleton<Flurl.Http.IFlurlClient, Flurl.Http.FlurlClient>();
         }
 
          public void Configure(IApplicationBuilder app, IHostingEnvironment env)

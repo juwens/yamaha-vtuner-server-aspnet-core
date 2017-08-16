@@ -11,6 +11,8 @@ using Microsoft.Extensions.Configuration;
 using System.Diagnostics;
 using Flurl;
 using Flurl.Http;
+using System.ComponentModel;
+using Newtonsoft.Json;
 
 namespace VtnrNetRadioServer.Repositories
 {
@@ -21,15 +23,27 @@ namespace VtnrNetRadioServer.Repositories
             public string name { get; set; }
         }
 
+        private class StationsContainer
+        {
+            [JsonProperty("stations")]
+            public Dictionary<string, ListOfItemsItem> Stations { get; set; } = new Dictionary<string, ListOfItemsItem>();
+            
+            [JsonProperty("stations-order")]
+            public List<string> StationsOrder { get; set; } = new List<string>();
+        }
+
         private readonly ILogger _logger;
         private readonly FirebaseConfig _conf;
+        private readonly IFlurlClient _client;
 
         public StationsRepository_Firebase(
             ILogger<StationsRepository_Firebase> logger,
-            IOptions<FirebaseConfig> conf)
+            IOptions<FirebaseConfig> conf,
+            IFlurlClient client)
         {
             this._logger = logger;
             this._conf = conf.Value;
+            this._client = client;
         }
 
         public async Task Test() {
@@ -41,57 +55,61 @@ namespace VtnrNetRadioServer.Repositories
 
         public async Task AddAsync(string name, string url)
         {
-             var res = await _conf.databaseURL
-                .AppendPathSegments(_conf.baseRef, "stations.json")
-                .SetQueryParams(new {auth = _conf.dbSecret})
+             var res = await 
+                _client.WithUrl(
+                    _conf.databaseURL
+                    .AppendPathSegments(_conf.baseRef, "stations.json")
+                    .SetQueryParams(new {auth = _conf.dbSecret}))
                 .PostJsonAsync(new ListOfItemsItem{
                     StationName = name,
                     StationUrl = url
                 })
                 .ReceiveJson<PostResponse>();
-            var keys = GetKeysOrderedAsync().Result.ToList();
+                
+            var keys = (await GetKeysOrderedAsync()).ToList();
             keys.Add(res.name);
             await SetKeyOrderAsync(keys.ToArray());
         }
 
-        private async Task<List<string>> GetAllKeysUnorderedAsync()
-        {
-            var items = await _conf.databaseURL
-                .AppendPathSegments(_conf.baseRef, "stations.json")
-                .SetQueryParams(new {
-                    auth = _conf.dbSecret,
-                    shallow = true
-                })
-                .GetJsonAsync<Dictionary<string, bool>>();
-            return items.Keys.ToList();
-        }
-
         private async Task SetKeyOrderAsync(string[] keys)
         {
-            var res = await _conf.databaseURL
-                .AppendPathSegments(_conf.baseRef, "stations-order.json")
-                .SetQueryParams(new {
-                    auth = _conf.dbSecret
-                })
+            var res = await _client.WithUrl(
+                    _conf.databaseURL
+                    .AppendPathSegments(_conf.baseRef, "stations-order.json")
+                    .SetQueryParams(new {
+                        auth = _conf.dbSecret
+                    }))
                 .PutJsonAsync(keys);
         }
 
         public async Task<IEnumerable<ItemContainer>> GetAllAsync()
         {
             var sw = Stopwatch.StartNew();
+            var container = await
+                _client.WithUrl(
+                        _conf.databaseURL
+                        .AppendPathSegments(_conf.baseRef + ".json")
+                        .SetQueryParams(new { auth = _conf.dbSecret }))
+                    .GetJsonAsync<StationsContainer>();
+
             // http://tmenier.github.io/Flurl/fluent-http/
-            var items = await _conf.databaseURL
-                .AppendPathSegments(_conf.baseRef, "stations.json")
-                .SetQueryParams(new {auth = _conf.dbSecret})
-                .GetJsonAsync<Dictionary<string, ListOfItemsItem>>();
+            // var items = await 
+            //     _flurlClient.WithUrl(
+            //         _conf.databaseURL
+            //         .AppendPathSegments(_conf.baseRef, "stations.json")
+            //         .SetQueryParams(new {auth = _conf.dbSecret}))
+            //     .GetJsonAsync<Dictionary<string, ListOfItemsItem>>();
             sw.Stop();
             _logger.LogCritical("stations ms: " + sw.ElapsedMilliseconds);
-            
+
             sw.Reset();
             sw.Start();
-            var orderedKeys = await GetKeysOrderedAsync();
-            var res = orderedKeys
-                .Select(x => new ItemContainer {
+            //var orderedKeys = await GetKeysOrderedAsync();
+            var items = container?.Stations ?? new Dictionary<string, ListOfItemsItem>();
+            var res = (container?.StationsOrder ?? new List<string>())
+                .Where(x => items.ContainsKey(x))
+                .Select(x => new ItemContainer
+                {
                     Key = x,
                     Item = items[x]
                 }).ToList();
@@ -103,20 +121,24 @@ namespace VtnrNetRadioServer.Repositories
 
         public async Task DeleteAsync(string id)
         {
-            var keys = GetKeysOrderedAsync().Result.ToList();
-            keys.Remove(id);
-            SetKeyOrderAsync(keys.ToArray()).Wait();
+            var keys = (await GetKeysOrderedAsync()).ToList();
 
-            await _conf.databaseURL
-                .AppendPathSegments(_conf.baseRef, "stations", id + ".json")
-                .SetQueryParams(new {auth = _conf.dbSecret})
+            keys.Remove(id);
+            await SetKeyOrderAsync(keys.ToArray());
+
+            await _client.WithUrl(
+                    _conf.databaseURL
+                    .AppendPathSegments(_conf.baseRef, "stations", id + ".json")
+                    .SetQueryParams(new {auth = _conf.dbSecret}))
                 .DeleteAsync();
         }
 
         private async Task<string[]> GetKeysOrderedAsync(){
-            var res = _conf.databaseURL
-                .AppendPathSegments(_conf.baseRef, "stations-order.json")
-                .SetQueryParams(new {auth = _conf.dbSecret})
+            var res = 
+                _client.WithUrl(
+                    _conf.databaseURL
+                    .AppendPathSegments(_conf.baseRef, "stations-order.json")
+                    .SetQueryParams(new {auth = _conf.dbSecret}))
                 .GetJsonAsync<string[]>();
             return (await res) ?? new string[0];
         }
