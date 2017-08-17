@@ -86,18 +86,6 @@ namespace VtnrNetRadioServer.Repositories
                     .GetJsonAsync<StationsContainer>();
 
             // http://tmenier.github.io/Flurl/fluent-http/
-            // var items = await 
-            //     _flurlClient.WithUrl(
-            //         _conf.databaseURL
-            //         .AppendPathSegments(_conf.baseRef, "stations.json")
-            //         .SetQueryParams(new {auth = _conf.dbSecret}))
-            //     .GetJsonAsync<Dictionary<string, ListOfItemsItem>>();
-            sw.Stop();
-            _logger.LogCritical("stations ms: " + sw.ElapsedMilliseconds);
-
-            sw.Reset();
-            sw.Start();
-            //var orderedKeys = await GetKeysOrderedAsync();
             var items = container?.Stations ?? new Dictionary<string, ListOfItemsItem>();
             var res = (container?.StationsOrder ?? new List<string>())
                 .Where(x => items.ContainsKey(x))
@@ -107,7 +95,7 @@ namespace VtnrNetRadioServer.Repositories
                     Item = items[x]
                 }).ToList();
             sw.Stop();
-            _logger.LogCritical("stations-order ms: " + sw.ElapsedMilliseconds);
+            _logger.LogCritical("GetAllAsync ms: " + sw.ElapsedMilliseconds);
 
             return res;
         }
