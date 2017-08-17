@@ -15,7 +15,14 @@
         margin: 0;
     }
 </style>
-
+    <form asp-controller="Stations" asp-action="Add" method="POST">
+        <fieldset>
+            <legend>New Station</legend>
+            <input type="text" name="name" value="station-name" />
+            <input type="text" name="url" value="station-url" />
+            <button>Add Station</button>
+        </fieldset>
+    </form>
 <div style="max-width: 400px;">
     @foreach (var itemContainer in Model)
     {
