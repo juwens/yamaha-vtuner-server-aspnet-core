@@ -11,15 +11,17 @@ using System.Threading.Tasks;
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 
 namespace VtnrNetRadioServer
 {
     public static class HttpAppServer
     {
-        public static Task Start(uint port)
+        public static IWebHost Setup(uint port)
         {
-            var host = new WebHostBuilder()
+            return new WebHostBuilder()
                 .UseKestrel()
+                //.UseLibuv(x => x.ThreadCount = 1)
                 .UseUrls("http://*:" + port)
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .ConfigureAppConfiguration((context, configBuilder) =>
@@ -34,9 +36,6 @@ namespace VtnrNetRadioServer
                     .AddDebug())
                 .UseStartup<Startup>()
                 .Build();
-
-            System.Console.WriteLine("host.Run in started");
-            return host.RunAsync();
         }
     }
 }

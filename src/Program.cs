@@ -18,13 +18,8 @@ namespace VtnrNetRadioServer
         {
             System.Console.WriteLine("starting");
 
-            var app = HttpAppServer.Start(80);
-            System.Console.WriteLine("started http server");
-
-            System.Console.WriteLine("running");
-            Task.WhenAny(app).Wait();
-
-            System.Console.WriteLine("HttpServer: " + app.Exception);
+            var server = HttpAppServer.Setup(80);
+            server.Run();
         }
     }
 }
