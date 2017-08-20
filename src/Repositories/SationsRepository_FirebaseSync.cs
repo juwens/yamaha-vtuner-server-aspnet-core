@@ -31,27 +31,36 @@ namespace VtnrNetRadioServer.Repositories
             _log = logger;
 
             _stationsRepo.ItemsChanged += stationsRepo_ItemsChanged;
-            SyncFromFirebaseToRepoAsync();
+            DownloadOnceAsync().Wait();
         }
 
-        private async Task SyncFromFirebaseToRepoAsync()
+        private async Task DownloadOnceAsync()
         {
-            var res = await _flurlClient.WithUrl(
+            try
+            {
+                var res = await _flurlClient.WithUrl(
                         _fbConf.databaseURL
                         .AppendPathSegments(_fbConf.baseRef, ".json")
-                        .SetQueryParams(new {
+                        .SetQueryParams(new
+                        {
                             auth = _fbConf.dbSecret
                         }))
                     .GetJsonAsync<IList<ItemContainer>>();
-            _stationsRepo.UpdateItems(res);
+                _stationsRepo.UpdateItems(res);
+            }
+            catch (System.Exception ex)
+            {
+                _log.LogError(ex, "exception");
+            }
         }
 
         private void stationsRepo_ItemsChanged()
         {
-            Task.Run(async () => {
+            Task.Run(async () =>
+            {
                 try
                 {
-                    await SyncToFirebaseAsync();
+                    await UploadAsync();
                 }
                 catch (System.Exception ex)
                 {
@@ -60,12 +69,13 @@ namespace VtnrNetRadioServer.Repositories
             });
         }
 
-        private Task SyncToFirebaseAsync()
+        private Task UploadAsync()
         {
             return _flurlClient.WithUrl(
                         _fbConf.databaseURL
                         .AppendPathSegments(_fbConf.baseRef, ".json")
-                        .SetQueryParams(new {
+                        .SetQueryParams(new
+                        {
                             auth = _fbConf.dbSecret
                         }))
                     .PutJsonAsync(_stationsRepo.Items.ToArray());
