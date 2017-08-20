@@ -43,5 +43,17 @@ namespace VtnrNetRadioServer.Controllers
             await _stationsRepo.DeleteAsync(id);
             return Redirect(nameof(Index));
         }
+        [HttpPost]
+        public async Task<ActionResult> Up(string id)
+        {
+            await _stationsRepo.MoveUpAsync(id);
+            return Redirect(nameof(Index));
+        }
+        [HttpPost]
+        public async Task<ActionResult> Down(string id)
+        {
+            await _stationsRepo.MoveDownAsync(id);
+            return Redirect(nameof(Index));
+        }
     }
 }

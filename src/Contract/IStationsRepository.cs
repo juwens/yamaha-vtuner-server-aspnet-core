@@ -13,5 +13,7 @@ namespace VtnrNetRadioServer.Contract
         Task<IEnumerable<ItemContainer>> GetAllAsync();
         Task AddAsync(string stationName, string stationUrl);
         Task DeleteAsync(string id);
+        Task MoveUpAsync(string id);
+        Task MoveDownAsync(string id);
     }
 }

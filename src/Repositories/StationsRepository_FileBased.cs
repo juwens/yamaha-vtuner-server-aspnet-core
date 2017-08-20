@@ -43,5 +43,15 @@ namespace VtnrNetRadioServer.Repositories
         {
             throw new NotImplementedException();
         }
+
+        public Task MoveUpAsync(string id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task MoveDownAsync(string id)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

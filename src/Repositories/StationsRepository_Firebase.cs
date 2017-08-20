@@ -123,5 +123,15 @@ namespace VtnrNetRadioServer.Repositories
                 .GetJsonAsync<string[]>();
             return (await res) ?? new string[0];
         }
+
+        public Task MoveUpAsync(string id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task MoveDownAsync(string id)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

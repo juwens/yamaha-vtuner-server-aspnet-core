@@ -62,5 +62,33 @@ namespace VtnrNetRadioServer.Repositories
             ItemsChanged?.Invoke();            
             return Task.CompletedTask;            
         }
+
+        public Task MoveUpAsync(string id)
+        {
+            var idx = _items.FindIndex(x => x.Key == id);
+            
+            if (idx > 0 && idx < _items.Count) {
+                var item = _items[idx];
+                _items.RemoveAt(idx);
+                _items.Insert(idx - 1, item);
+            }
+            
+            ItemsChanged?.Invoke();            
+            return Task.CompletedTask;
+        }
+
+        public Task MoveDownAsync(string id)
+        {
+            var idx = _items.FindIndex(x => x.Key == id);
+            
+            if (idx >= 0 && (idx + 1) < _items.Count) {
+                var item = _items[idx];
+                _items.RemoveAt(idx);
+                _items.Insert(idx + 1, item);
+            }
+            
+            ItemsChanged?.Invoke();            
+            return Task.CompletedTask;
+        }
     }
 }
