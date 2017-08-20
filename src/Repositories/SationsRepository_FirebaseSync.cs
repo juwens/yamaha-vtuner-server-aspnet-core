@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 using Flurl;
@@ -18,23 +20,80 @@ namespace VtnrNetRadioServer.Repositories
         private readonly IFlurlClient _flurlClient;
         private readonly FirebaseConfig _fbConf;
         private readonly ILogger<SationsRepository_FirebaseSync> _log;
+        private readonly Task _listenTask;
 
         public SationsRepository_FirebaseSync(
             IStationsRepository2 stationsRepo,
             ILogger<SationsRepository_FirebaseSync> logger,
-            IOptions<FirebaseConfig> conf,
-            IFlurlClient client)
+            IOptions<FirebaseConfig> conf)
         {
             _stationsRepo = stationsRepo;
-            _flurlClient = client;
+            _flurlClient = new FlurlClient();
             _fbConf = conf.Value;
             _log = logger;
 
             _stationsRepo.ItemsChanged += stationsRepo_ItemsChanged;
-            DownloadOnceAsync().Wait();
+            SyncFromFbToRepo().Wait();
+            _listenTask = ListenForFirebaseEvents();
         }
 
-        private async Task DownloadOnceAsync()
+        private Task ListenForFirebaseEvents()
+        {
+            return Task.Run(async () =>
+            {
+                while (true)
+                {
+                    try
+                    {
+                        var client = new HttpClient();
+                            client.DefaultRequestHeaders.Accept.Clear();
+                            client.DefaultRequestHeaders.Accept.Add(
+                                new MediaTypeWithQualityHeaderValue("text/event-stream"));
+                        var url = _fbConf.databaseURL.AppendPathSegments(_fbConf.baseRef, ".json")
+                                .SetQueryParams(new
+                                {
+                                    auth = _fbConf.dbSecret
+                                });
+                        client.Timeout = System.Threading.Timeout.InfiniteTimeSpan;
+                        var stream = await client.GetStreamAsync(url);
+                        
+                        var reader = new StreamReader(stream);
+
+                        while(true) {
+                            var @event = await reader.ReadLineAsync();
+                            var data = await reader.ReadLineAsync();
+                            var emptyLine = await reader.ReadLineAsync();
+                            
+                            _log.LogCritical("event: " + @event);
+                            _log.LogCritical("data: " + data);
+                            _log.LogCritical("separator: " + emptyLine);
+
+                            if (!@event.StartsWith("event: ")
+                                || !data.StartsWith("data: ")
+                                || emptyLine != "")
+                            {
+                                throw new Exception("cannot read events");
+                            }
+
+                            if (@event == ("event: put")
+                                || @event == ("event: delete")
+                                || @event == ("event: post")) 
+                            {
+                                await SyncFromFbToRepo();
+                            }
+                        }
+                        
+                    }
+                    catch (System.Exception ex)
+                    {
+                        _log.LogError(ex, "exception");
+                    }
+                    await Task.Delay(1000);
+                }
+            });
+        }
+
+        private async Task SyncFromFbToRepo()
         {
             try
             {
@@ -56,22 +115,18 @@ namespace VtnrNetRadioServer.Repositories
 
         private void stationsRepo_ItemsChanged()
         {
-            Task.Run(async () =>
-            {
-                try
-                {
-                    await UploadAsync();
-                }
-                catch (System.Exception ex)
-                {
-                    _log.LogError(ex, "exception");
-                }
-            });
+            UploadAsync().Wait();
         }
 
         private Task UploadAsync()
         {
-            return _flurlClient.WithUrl(
+            return Task.Run(async () =>
+            {
+                _log.LogInformation("uploading");
+
+                try
+                {
+                    var res = await _flurlClient.WithUrl(
                         _fbConf.databaseURL
                         .AppendPathSegments(_fbConf.baseRef, ".json")
                         .SetQueryParams(new
@@ -79,6 +134,13 @@ namespace VtnrNetRadioServer.Repositories
                             auth = _fbConf.dbSecret
                         }))
                     .PutJsonAsync(_stationsRepo.Items.ToArray());
+                    _log.LogInformation("uploading finished");
+                }
+                catch (System.Exception ex)
+                {
+                    _log.LogError(ex, "uploading failed");
+                }
+            });
         }
     }
 }
