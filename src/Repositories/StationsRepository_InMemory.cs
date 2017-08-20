@@ -90,5 +90,11 @@ namespace VtnrNetRadioServer.Repositories
             ItemsChanged?.Invoke();            
             return Task.CompletedTask;
         }
+
+        public void UpdateItems(IList<ItemContainer> res)
+        {
+            _items.Clear();
+            _items.AddRange(res);
+        }
     }
 }

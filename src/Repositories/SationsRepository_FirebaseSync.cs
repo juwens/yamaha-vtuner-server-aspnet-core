@@ -31,6 +31,19 @@ namespace VtnrNetRadioServer.Repositories
             _log = logger;
 
             _stationsRepo.ItemsChanged += stationsRepo_ItemsChanged;
+            SyncFromFirebaseToRepoAsync();
+        }
+
+        private async Task SyncFromFirebaseToRepoAsync()
+        {
+            var res = await _flurlClient.WithUrl(
+                        _fbConf.databaseURL
+                        .AppendPathSegments(_fbConf.baseRef, ".json")
+                        .SetQueryParams(new {
+                            auth = _fbConf.dbSecret
+                        }))
+                    .GetJsonAsync<IList<ItemContainer>>();
+            _stationsRepo.UpdateItems(res);
         }
 
         private void stationsRepo_ItemsChanged()
