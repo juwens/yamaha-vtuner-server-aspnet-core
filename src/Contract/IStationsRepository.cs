@@ -16,4 +16,10 @@ namespace VtnrNetRadioServer.Contract
         Task MoveUpAsync(string id);
         Task MoveDownAsync(string id);
     }
+
+    public interface IStationsRepository2 : IStationsRepository
+    {
+        IReadOnlyList<ItemContainer> Items {get;}
+        event Action ItemsChanged;
+    }
 }

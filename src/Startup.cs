@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -15,6 +16,7 @@ namespace VtnrNetRadioServer
         public IConfiguration Configuration { get; }
 
         private ILogger<Startup> _logger;
+        private SationsRepository_FirebaseSync _fbSync;
 
         public Startup(IConfiguration conf, ILogger<Startup> logger)
         {
@@ -37,16 +39,22 @@ namespace VtnrNetRadioServer
 
             // FirebaseConfig
             services.Configure<FirebaseConfig>(Configuration.GetSection(nameof(FirebaseConfig)));
+            services.AddSingleton<Flurl.Http.IFlurlClient, Flurl.Http.FlurlClient>();
             
             //services.AddTransient<IStationsRepository, StationsRepository_Firebase>();
-            services.AddSingleton<IStationsRepository, StationsRepository_InMemory>();
-            services.AddSingleton<Flurl.Http.IFlurlClient, Flurl.Http.FlurlClient>();
+            
+            services.AddSingleton<IStationsRepository2, StationsRepository_InMemory>();
+            services.AddSingleton<IStationsRepository>(x => x.GetService<IStationsRepository2>());
+
+            services.AddSingleton<SationsRepository_FirebaseSync>();
         }
 
-         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IServiceProvider serviceProvider)
         {
             _logger.LogDebug("Configure()");
             _logger.LogDebug("IsDev: " + env.IsDevelopment());
+
+            _fbSync = serviceProvider.GetService<SationsRepository_FirebaseSync>();
 
             app.UseDeveloperExceptionPage();
 
