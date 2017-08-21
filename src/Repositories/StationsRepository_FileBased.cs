@@ -53,5 +53,10 @@ namespace VtnrNetRadioServer.Repositories
         {
             throw new NotImplementedException();
         }
+
+        public Task UpdateAsync(string id, ListOfItemsItem item)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -1,0 +1,17 @@
+@model VtnrNetRadioServer.Contract.ListOfItemsItem
+
+<form method="POST">
+    <table>
+        <tbody>
+            <tr>
+                <td>Station Name</td>
+                <td><input asp-for="StationName" /></td>
+            </tr>
+            <tr>
+                <td>Station Url</td>
+                <td><input asp-for="StationUrl" /></td>
+            </tr>
+        </tbody>
+    </table>
+    <button>update</button>
+</form>

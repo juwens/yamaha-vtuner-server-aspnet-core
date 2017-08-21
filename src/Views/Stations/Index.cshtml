@@ -48,27 +48,28 @@
         </div>
     </form>
 <div>    
-    @foreach (var itemContainer in Model)
+    @foreach (VtnrNetRadioServer.Repositories.ItemContainer itemContainer in Model)
     {
         <hr />
-        <form asp-controller="Stations" method="POST">
-            <input name="id" type="hidden" value="@itemContainer.Key">
+        
+        <!-- <input name="id" type="hidden" value="@itemContainer.Key"> -->
+        <div style="display: flex; margin: 5px; align-items: flex-start;">
+            <span style="margin: auto 5px; display: flex; flex-grow: 1;">
+                @itemContainer.Item.StationName
+            </span>
 
-            <div style="display: flex; margin: 5px; align-items: flex-start;">
-                <button 
-                    class=""
-                    style="margin: auto 5px; display: flex; flex-grow: 1;"
-                    asp-action="Edit">@itemContainer.Key</button>
-
-                <div style="display: flex; flex-grow: 0;">
-                    <button class="mdi mdi-arrow-down-bold-circle mdi-24px" style="margin: 0 5px;" asp-action="Down" />
-                    <button class="mdi mdi-arrow-up-bold-circle mdi-24px" style="margin: 0 5px;" asp-action="Up" />
-                    <button 
-                        class="mdi mdi-close-circle mdi-24px"
-                        style="margin: 0 5px;"
-                        asp-action="Delete" />
-                </div>
+            <div style="display: flex; flex-grow: 0;">
+                <form asp-action="Edit" asp-route-id="@itemContainer.Key" method="GET" asp-anti-forgery="false">
+                    <button  class="mdi mdi-pencil-circle mdi-24px" style="margin: 0 5px;" />
+                </form>
+                
+                <form asp-controller="Stations" method="POST">
+                    <input type="hidden" name="id" value="@itemContainer.Key" />
+                    <button asp-action="Down" class="mdi mdi-arrow-down-bold-circle mdi-24px" style="margin: 0 5px;" />
+                    <button asp-action="Up" class="mdi mdi-arrow-up-bold-circle mdi-24px" style="margin: 0 5px;" />
+                    <button asp-action="Delete" class="mdi mdi-close-circle mdi-24px" style="margin: 0 5px;" />
+                </form>
             </div>
-        </form>
+        </div>
     }
 </div>

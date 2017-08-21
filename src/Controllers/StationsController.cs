@@ -1,9 +1,11 @@
 using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VtnrNetRadioServer.Contract;
+using VtnrNetRadioServer.Repositories;
 
 namespace VtnrNetRadioServer.Controllers
 {
@@ -21,7 +23,7 @@ namespace VtnrNetRadioServer.Controllers
             this._logger = logger;
         }
 
-        public async Task<ActionResult> Index()
+        public async Task<ViewResult> Index()
         {
             var sw = Stopwatch.StartNew();
             var stations = await _stationsRepo.GetAllAsync();
@@ -31,29 +33,45 @@ namespace VtnrNetRadioServer.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> Add(string name, string url)
+        public async Task<IActionResult> Add(string name, string url)
         {
             await _stationsRepo.AddAsync(name, url);
             return Redirect(nameof(Index));
         }
 
         [HttpPost]
-        public async Task<ActionResult> Delete(string id)
+        public async Task<IActionResult> Delete(string id)
         {
             await _stationsRepo.DeleteAsync(id);
             return Redirect(nameof(Index));
         }
+
         [HttpPost]
-        public async Task<ActionResult> Up(string id)
+        public async Task<IActionResult> Up(string id)
         {
             await _stationsRepo.MoveUpAsync(id);
             return Redirect(nameof(Index));
         }
+
         [HttpPost]
-        public async Task<ActionResult> Down(string id)
+        public async Task<IActionResult> Down(string id)
         {
             await _stationsRepo.MoveDownAsync(id);
             return Redirect(nameof(Index));
+        }
+
+        [HttpGet]
+        public async Task<ViewResult> Edit(string id)
+        {
+            var item = (await _stationsRepo.GetAllAsync()).Single(x => x.Key == id);
+            return View(item.Item);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(string id, ListOfItemsItem item)
+        {
+            await _stationsRepo.UpdateAsync(id, item);
+            return RedirectToAction(nameof(Index));
         }
     }
 }

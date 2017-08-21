@@ -15,6 +15,7 @@ namespace VtnrNetRadioServer.Contract
         Task DeleteAsync(string id);
         Task MoveUpAsync(string id);
         Task MoveDownAsync(string id);
+        Task UpdateAsync(string id, ListOfItemsItem item);
     }
 
     public interface IStationsRepository2 : IStationsRepository

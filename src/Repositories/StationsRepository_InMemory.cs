@@ -96,5 +96,12 @@ namespace VtnrNetRadioServer.Repositories
             _items.Clear();
             _items.AddRange(res);
         }
+
+        public Task UpdateAsync(string id, ListOfItemsItem item)
+        {
+            _items.Single(x => x.Key == id).Item = item;
+            ItemsChanged?.Invoke();
+            return Task.CompletedTask;
+        }
     }
 }
