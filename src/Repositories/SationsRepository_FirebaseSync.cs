@@ -64,9 +64,9 @@ namespace VtnrNetRadioServer.Repositories
                             var data = await reader.ReadLineAsync();
                             var emptyLine = await reader.ReadLineAsync();
                             
-                            _log.LogCritical("event: " + @event);
-                            _log.LogCritical("data: " + data);
-                            _log.LogCritical("separator: " + emptyLine);
+                            _log.LogTrace("event: " + @event);
+                            _log.LogTrace("data: " + data);
+                            _log.LogTrace("separator: " + emptyLine);
 
                             if (!@event.StartsWith("event: ")
                                 || !data.StartsWith("data: ")
@@ -122,7 +122,7 @@ namespace VtnrNetRadioServer.Repositories
         {
             return Task.Run(async () =>
             {
-                _log.LogInformation("uploading");
+                _log.LogDebug("uploading");
 
                 try
                 {

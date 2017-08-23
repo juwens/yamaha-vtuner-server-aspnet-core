@@ -28,14 +28,9 @@ namespace VtnrNetRadioServer.Middleware
             await _next.Invoke(context);
             watch.Stop();
 
-            var logTemplate = @"{requestPath}; type: {requestContentType}; length: {requestContentLength}; Start time: {startTime} Duration: {duration}";
-
-            _logger.LogInformation(logTemplate,
-                context.Request.Path,
-                context.Request.ContentType,
-                context.Request.ContentLength,
-                startTime,
-                watch.ElapsedMilliseconds);
+            var r = context.Request;
+            var msg = $"{r.Method} {r.Path}{r.QueryString}; Start time: {startTime} Duration: {watch.ElapsedMilliseconds}";
+            _logger.LogInformation(msg);
         }
     }
 }
