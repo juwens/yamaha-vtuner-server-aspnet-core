@@ -105,7 +105,7 @@ namespace VtnrNetRadioServer.Repositories
                             auth = _fbConf.dbSecret
                         }))
                     .GetJsonAsync<IList<ItemContainer>>();
-                _stationsRepo.UpdateItems(res);
+                _stationsRepo.SetItems(res);
             }
             catch (System.Exception ex)
             {

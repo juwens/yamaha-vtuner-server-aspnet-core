@@ -8,6 +8,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using VtnrNetRadioServer.Contract;
 using VtnrNetRadioServer.Repositories;
+using System.Threading.Tasks;
+using VtnrNetRadioServer.Middleware;
 
 namespace VtnrNetRadioServer
 {
@@ -55,6 +57,24 @@ namespace VtnrNetRadioServer
             _logger.LogDebug("IsDev: " + env.IsDevelopment());
 
             _fbSync = serviceProvider.GetService<SationsRepository_FirebaseSync>();
+            var vtunerCfg = serviceProvider.GetService<IOptions<VtunerConfig>>().Value;
+            
+
+            Task.Run(async () =>
+            {
+                while (true)
+                {
+                    try
+                    {
+                        var dnsProxy = new DnsProxyServer(vtunerCfg);
+                        await dnsProxy.Run();
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "dns-server crashed");
+                    }
+                }
+            });
 
             app.UseDeveloperExceptionPage();
 
@@ -68,6 +88,8 @@ namespace VtnrNetRadioServer
             // }
 
             //app.UseStaticFiles();
+
+            app.UseMiddleware<RequestLoggingMiddleware>();
 
             app.UseMvc(routes =>
             {

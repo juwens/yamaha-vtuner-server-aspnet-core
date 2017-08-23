@@ -23,6 +23,6 @@ namespace VtnrNetRadioServer.Contract
         IReadOnlyList<ItemContainer> Items {get;}
         event Action ItemsChanged;
 
-        void UpdateItems(IList<ItemContainer> res);
+        void SetItems(IList<ItemContainer> res);
     }
 }

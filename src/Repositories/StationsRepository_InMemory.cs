@@ -91,10 +91,14 @@ namespace VtnrNetRadioServer.Repositories
             return Task.CompletedTask;
         }
 
-        public void UpdateItems(IList<ItemContainer> res)
+        public void SetItems(IList<ItemContainer> newItems)
         {
+            foreach (var item in newItems)
+            {
+                item.Item.ItemType = "Station";
+            }
             _items.Clear();
-            _items.AddRange(res);
+            _items.AddRange(newItems);
         }
 
         public Task UpdateAsync(string id, ListOfItemsItem item)
