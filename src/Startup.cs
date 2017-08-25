@@ -10,6 +10,11 @@ using VtnrNetRadioServer.Contract;
 using VtnrNetRadioServer.Repositories;
 using System.Threading.Tasks;
 using VtnrNetRadioServer.Middleware;
+using System.Threading;
+using VtnrNetRadioServer.DnsServer2;
+using ARSoft.Tools.Net.Dns;
+using VtnrNetRadioServer.Helper;
+using Microsoft.AspNetCore.ResponseCompression;
 
 namespace VtnrNetRadioServer
 {
@@ -19,6 +24,7 @@ namespace VtnrNetRadioServer
 
         private ILogger<Startup> _logger;
         private SationsRepository_FirebaseSync _fbSync;
+        private DnsServer _dnsServer;
 
         public Startup(IConfiguration conf, ILogger<Startup> logger)
         {
@@ -49,34 +55,23 @@ namespace VtnrNetRadioServer
             services.AddSingleton<IStationsRepository>(x => x.GetService<IStationsRepository2>());
 
             services.AddSingleton<SationsRepository_FirebaseSync>();
+            services.AddTransient<DnsProxyServer>();
+            services.AddTransient<ForwardingDnsServer>();
+            services.AddTransient<NetworkInterfaceHelper>();
+
+            services.Configure<GzipCompressionProviderOptions>(options => options.Level = System.IO.Compression.CompressionLevel.Optimal);
+            services.AddResponseCompression();
         }
 
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IServiceProvider serviceProvider)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IServiceProvider serviceProvider, ILoggerFactory loggerFactory)
         {
+            //loggerFactory.AddFile("/tmp/vtuner-log.txt", LogLevel.Information);
             _logger.LogDebug("Configure()");
             _logger.LogDebug("IsDev: " + env.IsDevelopment());
 
             _fbSync = serviceProvider.GetService<SationsRepository_FirebaseSync>();
-            var vtunerCfg = serviceProvider.GetService<IOptions<VtunerConfig>>().Value;
-            
-
-            Task.Run(async () =>
-            {
-                while (true)
-                {
-                    try
-                    {
-                        var dnsProxy = new DnsProxyServer(vtunerCfg);
-                        await dnsProxy.Run();
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError(ex, "dns-server crashed");
-                    }
-                }
-            });
-
-            app.UseDeveloperExceptionPage();
+            var dnsProxy = serviceProvider.GetService<ForwardingDnsServer>();
+            _dnsServer = dnsProxy.Run();
 
             if (env.IsDevelopment())
             {
@@ -87,9 +82,13 @@ namespace VtnrNetRadioServer
             //     app.UseExceptionHandler("/Home/Error");
             // }
 
+            app.UseResponseBuffering();
+            app.UseResponseCompression();
+
+
             //app.UseStaticFiles();
 
-            app.UseMiddleware<RequestLoggingMiddleware>();
+            //app.UseMiddleware<RequestLoggingMiddleware>();
 
             app.UseMvc(routes =>
             {

@@ -2,22 +2,30 @@ using System;
 using System.Net;
 using NetInfo = System.Net.NetworkInformation;
 using System.Net.Sockets;
+using Microsoft.Extensions.Logging;
 
 namespace VtnrNetRadioServer.Helper
 {
     public class NetworkInterfaceHelper
     {
-        public static IPAddress GetLocalIPv4Address()
+        private readonly ILogger<NetworkInterfaceHelper> _logger;
+
+        public NetworkInterfaceHelper(ILogger<NetworkInterfaceHelper> logger)
+        {
+            this._logger = logger;
+        }
+
+        public IPAddress GetMyIPv4Address()
         {
             foreach (NetInfo.NetworkInterface netif in NetInfo.NetworkInterface.GetAllNetworkInterfaces())
             {
 
-                Console.WriteLine("Network Interface: {0}", netif.Name);
-                System.Console.WriteLine("\tNetworkInterfaceType: {0}", netif.NetworkInterfaceType);
+                //Console.WriteLine("Network Interface: {0}", netif.Name);
+                //System.Console.WriteLine("\tNetworkInterfaceType: {0}", netif.NetworkInterfaceType);
 #if WINDOWS
-                System.Console.WriteLine("\tIsReceiveOnly: {0}", netif.IsReceiveOnly);
+                //System.Console.WriteLine("\tIsReceiveOnly: {0}", netif.IsReceiveOnly);
 #endif
-                System.Console.WriteLine("\tOperationalStatus: {0}", netif.OperationalStatus);
+                //System.Console.WriteLine("\tOperationalStatus: {0}", netif.OperationalStatus);
 
                 if (netif.OperationalStatus != NetInfo.OperationalStatus.Up)
                 {
@@ -34,10 +42,10 @@ namespace VtnrNetRadioServer.Helper
                 NetInfo.IPInterfaceProperties properties = netif.GetIPProperties();
                 foreach (NetInfo.IPAddressInformation unicast in properties.UnicastAddresses)
                 {
-                    Console.WriteLine("\tUniCast: {0}", unicast.Address);
+                    //Console.WriteLine("\tUniCast: {0}", unicast.Address);
 #if WINDOWS
-                    Console.WriteLine("\t\tIsTransient: {0}", unicast.IsTransient);              
-                    Console.WriteLine("\t\tIsDnsEligible: {0}", unicast.IsDnsEligible);
+                    //Console.WriteLine("\t\tIsTransient: {0}", unicast.IsTransient);              
+                    //Console.WriteLine("\t\tIsDnsEligible: {0}", unicast.IsDnsEligible);
 #endif
                     if (unicast.Address.AddressFamily == AddressFamily.InterNetwork)
                     {
@@ -49,6 +57,4 @@ namespace VtnrNetRadioServer.Helper
             throw new Exception("no interface with ip found");
         }
     }
-
-
 }

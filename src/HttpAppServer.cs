@@ -31,9 +31,12 @@ namespace VtnrNetRadioServer
                         .AddJsonFile($"appsettings.{context.HostingEnvironment.EnvironmentName}.json", optional: true)
                         .AddEnvironmentVariables();
                 })
-                .ConfigureLogging(x => x
-                    .AddConsole()
-                    .AddDebug())
+                .ConfigureLogging((hostingContext, logging) => 
+                {
+                    logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
+                    logging.AddConsole();
+                    //.AddDebug()
+                })
                 .UseStartup<Startup>()
                 .Build();
         }

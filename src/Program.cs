@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Net.NetworkInformation;
 using System.Net;
+using DNS.Server;
 
 namespace VtnrNetRadioServer
 {
