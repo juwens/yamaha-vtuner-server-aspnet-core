@@ -25,10 +25,7 @@ namespace VtnrNetRadioServer.Controllers
 
         public async Task<ViewResult> Index()
         {
-            var sw = Stopwatch.StartNew();
             var stations = await _stationsRepo.GetAllAsync();
-            sw.Stop();
-            _logger.LogCritical("GetAll ms: " + sw.ElapsedMilliseconds);
             return View(stations);
         }
 
