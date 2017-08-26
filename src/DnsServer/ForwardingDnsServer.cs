@@ -51,11 +51,14 @@ namespace VtnrNetRadioServer.DnsServer2
             _logger.LogInformation("dns-req: {0} {1}", question.RecordType, question.Name);
 
             DnsMessage response = query.CreateResponseInstance();
-            
+
+            var domainsToAnswerDirect = new[] { _cfg.VtunerServerOne, _cfg.VtunerServerTwo }
+            .Select(x => ARSoft.Tools.Net.DomainName.Parse(x))
+            .ToList();
+
             if (question.RecordType == RecordType.A
                 //&& question.Name.IsSubDomainOf(ARSoft.Tools.Net.DomainName.Parse("vtuner.com"))
-                && (question.Name.ToString() == _cfg.VtunerServerOne 
-                    || question.Name.ToString() == _cfg.VtunerServerTwo))
+                && domainsToAnswerDirect.Any(x => x == question.Name))
             {
                 var myIp = _networkInterfaceHelper.GetMyIPv4Address();
                 response.AnswerRecords.Add(new ARecord(question.Name, 10, myIp));
