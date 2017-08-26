@@ -1,16 +1,11 @@
 using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using VtnrNetRadioServer.Contract;
 using VtnrNetRadioServer.Repositories;
-using System.Threading.Tasks;
-using VtnrNetRadioServer.Middleware;
-using System.Threading;
 using VtnrNetRadioServer.DnsServer2;
 using ARSoft.Tools.Net.Dns;
 using VtnrNetRadioServer.Helper;
@@ -55,7 +50,6 @@ namespace VtnrNetRadioServer
             services.AddSingleton<IStationsRepository>(x => x.GetService<IStationsRepository2>());
 
             services.AddSingleton<SationsRepository_FirebaseSync>();
-            services.AddTransient<DnsProxyServer>();
             services.AddTransient<ForwardingDnsServer>();
             services.AddTransient<NetworkInterfaceHelper>();
 
