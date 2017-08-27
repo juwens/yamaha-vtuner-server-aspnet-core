@@ -3,19 +3,6 @@
     Layout = "_Layout";
 }
 <style>
-    body {
-        margin: 2px;
-        max-width: 400px;
-    }
-
-    html {
-        background-color: aliceblue;
-    }
-
-    hr {
-        margin: 0;
-    }
-
     button {
         background-color: transparent;
         cursor: pointer;
@@ -67,7 +54,11 @@
                     <input type="hidden" name="id" value="@itemContainer.Key" />
                     <button asp-action="Down" class="mdi mdi-arrow-down-bold-circle mdi-24px" style="margin: 0 5px;" />
                     <button asp-action="Up" class="mdi mdi-arrow-up-bold-circle mdi-24px" style="margin: 0 5px;" />
-                    <button asp-action="Delete" class="mdi mdi-close-circle mdi-24px" style="margin: 0 5px;" />
+                    <button 
+                            asp-action="Delete" 
+                            class="mdi mdi-close-circle mdi-24px" 
+                            style="margin: 0 5px;"
+                            onclick="return confirm('Are you sure you want to delete?')"/>
                 </form>
             </div>
         </div>

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VtnrNetRadioServer.Contract;
 using VtnrNetRadioServer.Repositories;
+using VtnrNetRadioServer.ViewModels.Stations;
 
 namespace VtnrNetRadioServer.Controllers
 {
@@ -61,7 +62,7 @@ namespace VtnrNetRadioServer.Controllers
         public async Task<ViewResult> Edit(string id)
         {
             var item = (await _stationsRepo.GetAllAsync()).Single(x => x.Key == id);
-            return View(item.Item);
+            return View(new EditStationVm { Item = item.Item });
         }
 
         [HttpPost]

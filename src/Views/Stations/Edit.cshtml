@@ -1,17 +1,31 @@
-@model VtnrNetRadioServer.Contract.ListOfItemsItem
-
+@model VtnrNetRadioServer.ViewModels.Stations.EditStationVm
+@{
+    Layout = "_Layout";
+}
 <form method="POST">
-    <table>
+    <table style="width: 100%">
+        <colgroup>
+            <col span="1" style="width: 30%">
+            <col span="1" style="width: 70%">
+        </colgroup>
         <tbody>
             <tr>
-                <td>Station Name</td>
-                <td><input asp-for="StationName" /></td>
+                <td>Item Type</td>
+                <td>
+                    <select asp-for="Item.ItemType" asp-items="Model.ItemTypes" style="width: 100%"></select>
+                </td>
             </tr>
             <tr>
-                <td>Station Url</td>
-                <td><input asp-for="StationUrl" /></td>
+                <td>Station Name</td>
+                <td><input asp-for="Item.StationName" style="width: 100%" /></td>
             </tr>
         </tbody>
     </table>
-    <button>update</button>
+
+    <fieldset>
+        <legend>Station Url</legend>
+        <textarea asp-for="Item.StationUrl" style="width: 100%"></textarea>
+    </fieldset>
+    <hr style="margin: 10px 0;" />
+    <button type="submit">update</button>
 </form>
