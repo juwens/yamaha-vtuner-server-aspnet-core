@@ -49,7 +49,8 @@ namespace VtnrNetRadioServer.Repositories
                             client.DefaultRequestHeaders.Accept.Clear();
                             client.DefaultRequestHeaders.Accept.Add(
                                 new MediaTypeWithQualityHeaderValue("text/event-stream"));
-                        var url = _fbConf.databaseURL.AppendPathSegments(_fbConf.baseRef, ".json")
+                        var url = 
+                        _fbConf.dbUrl
                                 .SetQueryParams(new
                                 {
                                     auth = _fbConf.dbSecret
@@ -98,8 +99,7 @@ namespace VtnrNetRadioServer.Repositories
             try
             {
                 var res = await _flurlClient.WithUrl(
-                        _fbConf.databaseURL
-                        .AppendPathSegments(_fbConf.baseRef, ".json")
+                        _fbConf.dbUrl
                         .SetQueryParams(new
                         {
                             auth = _fbConf.dbSecret
@@ -127,8 +127,7 @@ namespace VtnrNetRadioServer.Repositories
                 try
                 {
                     var res = await _flurlClient.WithUrl(
-                        _fbConf.databaseURL
-                        .AppendPathSegments(_fbConf.baseRef, ".json")
+                        _fbConf.dbUrl
                         .SetQueryParams(new
                         {
                             auth = _fbConf.dbSecret

@@ -4,7 +4,7 @@
     <!-- <MvcRazorCompileOnPublish>true</MvcRazorCompileOnPublish> -->
     <AssemblyName>VtnrNetRadioServer</AssemblyName>
     <RootNamespace>VtnrNetRadioServer</RootNamespace>
-    <RuntimeIdentifiers>win10-x64;debian.8-arm</RuntimeIdentifiers>
+    <RuntimeIdentifiers>win10-x64;debian.8-arm;debian-arm;linux-arm</RuntimeIdentifiers>
   </PropertyGroup>
 
   <ItemGroup>
