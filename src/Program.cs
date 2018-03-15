@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.Extensions.DependencyInjection;
 
 using System;
 using System.IO;
@@ -14,15 +16,41 @@ using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using System.Diagnostics;
 using Microsoft.AspNetCore;
+using Microsoft.AspNetCore.Hosting.Internal;
 
 namespace VtnrNetRadioServer
 {
     class Program
     {
+        public static IConfiguration Configuration { get; set; }
+
         static void Main(string[] args)
         {
+            Configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json")
+                .Build();
+
             WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>()
+                .ConfigureServices((_, services) =>
+                {
+                    services.AddMvc();
+                    services.AddResponseCompression();
+                    services.AddVtunerServices();
+                })
+                .Configure((app) =>
+                {
+                    app.UseMvcWithDefaultRoute();
+                    app.UseResponseBuffering();
+                    app.UseResponseCompression();
+                    app.UseVtunerServices(app.ApplicationServices);
+
+                    var env = app.ApplicationServices.GetService<IHostingEnvironment>();
+                    if (env.IsDevelopment())
+                    {
+                        app.UseDeveloperExceptionPage();
+                    }
+                })
                 .Build()
                 .Run();
         }
