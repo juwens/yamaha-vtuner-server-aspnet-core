@@ -19,26 +19,7 @@ namespace VtnrNetRadioServer
     {
         public static IWebHost Setup(uint port)
         {
-            return new WebHostBuilder()
-                .UseKestrel()
-                //.UseLibuv(x => x.ThreadCount = 1)
-                .UseUrls("http://*:" + port)
-                .UseContentRoot(Directory.GetCurrentDirectory())
-                .ConfigureAppConfiguration((context, configBuilder) =>
-                {
-                    configBuilder
-                        .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                        .AddJsonFile($"appsettings.{context.HostingEnvironment.EnvironmentName}.json", optional: true)
-                        .AddEnvironmentVariables();
-                })
-                .ConfigureLogging((hostingContext, logging) => 
-                {
-                    logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
-                    logging.AddConsole();
-                    //.AddDebug()
-                })
-                .UseStartup<Startup>()
-                .Build();
+            return 
         }
     }
 }
