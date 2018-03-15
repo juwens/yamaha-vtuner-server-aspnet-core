@@ -13,6 +13,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using System.Diagnostics;
+using Microsoft.AspNetCore;
 
 namespace VtnrNetRadioServer
 {
@@ -20,26 +21,7 @@ namespace VtnrNetRadioServer
     {
         static void Main(string[] args)
         {
-            Debug.WriteLine("starting");
-            var port = 80;
-
-            new WebHostBuilder()
-                .UseKestrel()
-                //.UseLibuv(x => x.ThreadCount = 1)
-                .UseUrls("http://*:" + port)
-                .UseContentRoot(Directory.GetCurrentDirectory())
-                .ConfigureAppConfiguration((context, configBuilder) =>
-                {
-                    configBuilder
-                        .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                        .AddJsonFile($"appsettings.{context.HostingEnvironment.EnvironmentName}.json", optional: true)
-                        .AddEnvironmentVariables();
-                })
-                .ConfigureLogging((hostingContext, logging) => 
-                {
-                    logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
-                    logging.AddConsole();
-                })
+            WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
                 .Build()
                 .Run();
