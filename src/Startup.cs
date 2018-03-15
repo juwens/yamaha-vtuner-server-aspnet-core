@@ -10,13 +10,13 @@ using VtnrNetRadioServer.DnsServer2;
 using ARSoft.Tools.Net.Dns;
 using VtnrNetRadioServer.Helper;
 using Microsoft.AspNetCore.ResponseCompression;
+using System.Diagnostics;
 
 namespace VtnrNetRadioServer
 {
     public class Startup
     {
         public IConfiguration Configuration { get; }
-
         private ILogger<Startup> _logger;
         private SationsRepository_FirebaseSync _fbSync;
         private DnsServer _dnsServer;
@@ -29,9 +29,8 @@ namespace VtnrNetRadioServer
 
         public void ConfigureServices(IServiceCollection services)
         {
-            _logger.LogDebug("ConfigureServices()");
-
             services.AddMvc();
+            services.AddResponseCompression();
 
             services.Configure<VtunerConfig>(Configuration.GetSection("vtuner"));
             services.Configure<FirebaseConfig>(Configuration.GetSection("firebase"));
@@ -44,30 +43,30 @@ namespace VtnrNetRadioServer
             services.AddSingleton<SationsRepository_FirebaseSync>();
             services.AddTransient<ForwardingDnsServer>();
             services.AddTransient<NetworkInterfaceHelper>();
-
-            services.Configure<GzipCompressionProviderOptions>(options => options.Level = System.IO.Compression.CompressionLevel.Fastest);
-            services.AddResponseCompression();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, IServiceProvider serviceProvider, ILoggerFactory loggerFactory)
         {
-            //loggerFactory.AddFile("/tmp/vtuner-log.txt", LogLevel.Information);
-            _logger.LogDebug("Configure()");
-            _logger.LogDebug("IsDev: " + env.IsDevelopment());
+            app.UseMvcWithDefaultRoute();
+            app.UseResponseBuffering();
+            app.UseResponseCompression();
 
             _fbSync = serviceProvider.GetService<SationsRepository_FirebaseSync>();
-            var dnsProxy = serviceProvider.GetService<ForwardingDnsServer>();
-            _dnsServer = dnsProxy.Run();
+
+            try
+            {
+                _dnsServer = serviceProvider.GetService<ForwardingDnsServer>().Run();
+            }
+            catch (System.Exception ex)
+            {
+                _logger.LogError("could not start dns-server.");
+                _logger.LogTrace(ex.ToString());
+            }
 
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
-
-            app.UseResponseBuffering();
-            app.UseResponseCompression();
-
-            app.UseMvcWithDefaultRoute();
         }
     }
 }
