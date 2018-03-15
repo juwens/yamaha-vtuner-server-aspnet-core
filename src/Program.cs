@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System.Diagnostics;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 
 namespace VtnrNetRadioServer
@@ -7,7 +8,7 @@ namespace VtnrNetRadioServer
     {
         static void Main(string[] args)
         {
-            System.Console.WriteLine("starting");
+            Debug.WriteLine("starting");
 
             var server = HttpAppServer.Setup(80);
             server.Run();

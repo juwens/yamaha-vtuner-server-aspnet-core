@@ -18,10 +18,8 @@ namespace VtnrNetRadioServer
     {
         public string EncryptedToken { get; set; } = "";
         public int HttpPort { get;  set; } = 8080;
-        //public string EncryptedReceiverMacAddress { get;  set; } = "";
         public string DnsServer { get;  set; } = "8.8.8.8";
         public string VtunerServerOne { get;  set; } = "";
         public string VtunerServerTwo { get;  set; } = "";
-        public int DnsPort {get;set;} = 53;
     }
 }

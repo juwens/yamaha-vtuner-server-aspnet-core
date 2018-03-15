@@ -37,7 +37,7 @@ namespace VtnrNetRadioServer
             services.AddMvc();
 
             // https://weblog.west-wind.com/posts/2016/may/23/strongly-typed-configuration-settings-in-aspnet-core
-            var cfgSection = Configuration.GetSection(nameof(VtunerConfig));
+            var cfgSection = Configuration.GetSection("vtuner");
             services.Configure<VtunerConfig>(cfgSection);
 
             // FirebaseConfig
