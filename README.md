@@ -10,4 +10,4 @@
 
 # Vtuner <-> reciever specific
 - ListOfItems XML response MUST NOT have any faulty Urls - crashes receiver
-- receiver may not support chunked encoding
+- my receiver does not support chunked encoding: therfore add ResponseBuffering
