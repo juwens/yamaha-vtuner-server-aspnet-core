@@ -26,6 +26,12 @@ namespace VtnrNetRadioServer
 
         static void Main(string[] args)
         {
+            var logFactory = new LoggerFactory()
+            .AddConsole(LogLevel.Debug)
+            .AddDebug();
+
+            var logger = logFactory.CreateLogger<Type>();
+
             var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
             System.Console.WriteLine("Environment: " + environment);
 
@@ -45,6 +51,12 @@ namespace VtnrNetRadioServer
                 })
                 .Configure((app) =>
                 {
+                    app.Use(async (context, next) => {
+                        var url = Microsoft.AspNetCore.Http.Extensions.UriHelper.GetDisplayUrl(context.Request);
+                        logger.LogInformation(string.Format("{0} {1}", context.Request.Method, url));
+                        await next.Invoke();
+                    });
+
                     app.UseMvcWithDefaultRoute();
                     app.UseResponseBuffering();
                     app.UseResponseCompression();
