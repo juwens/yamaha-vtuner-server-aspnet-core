@@ -26,12 +26,17 @@ namespace VtnrNetRadioServer
 
         static void Main(string[] args)
         {
+            var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+            System.Console.WriteLine("Environment: " + environment);
+
             Configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json")
+                .AddJsonFile($"hosting.{environment.ToLower()}.json", true)
                 .Build();
 
             WebHost.CreateDefaultBuilder(args)
+                .UseConfiguration(Configuration)
                 .ConfigureServices((_, services) =>
                 {
                     services.AddMvc();
