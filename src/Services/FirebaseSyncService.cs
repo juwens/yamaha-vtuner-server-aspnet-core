@@ -5,26 +5,26 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using System.Xml.Serialization;
 using Flurl;
 using Flurl.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using VtnrNetRadioServer.Contract;
+using VtnrNetRadioServer.Repositories;
 
-namespace VtnrNetRadioServer.Repositories
+namespace VtnrNetRadioServer.Services
 {
-    public class SationsRepository_FirebaseSync
+    public class FirebaseSyncService
     {
-        private readonly IStationsRepository2 _stationsRepo;
+        private readonly IStationsRepository _stationsRepo;
         private readonly IFlurlClient _flurlClient;
         private readonly FirebaseConfig _fbConf;
-        private readonly ILogger<SationsRepository_FirebaseSync> _log;
+        private readonly ILogger<FirebaseSyncService> _log;
         private readonly Task _listenTask;
 
-        public SationsRepository_FirebaseSync(
-            IStationsRepository2 stationsRepo,
-            ILogger<SationsRepository_FirebaseSync> logger,
+        public FirebaseSyncService(
+            IStationsRepository stationsRepo,
+            ILogger<FirebaseSyncService> logger,
             IOptions<FirebaseConfig> conf)
         {
             _stationsRepo = stationsRepo;

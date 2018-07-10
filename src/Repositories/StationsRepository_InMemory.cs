@@ -16,7 +16,7 @@ using Newtonsoft.Json;
 
 namespace VtnrNetRadioServer.Repositories
 {
-    public class StationsRepository_InMemory : IStationsRepository2
+    public class StationsRepository_InMemory : IStationsRepository
     {
         private readonly ILogger _logger;
         private readonly FirebaseConfig _conf;

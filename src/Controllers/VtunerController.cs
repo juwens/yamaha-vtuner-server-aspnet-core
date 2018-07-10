@@ -53,7 +53,7 @@ namespace VtnrNetRadioServer.Controllers
         private ContentResult ListOfItemsXml()
         {
             _logger.LogInformation("responde with ListOfItemsXml");
-            var stations = _stationsRepo.GetAllAsync().Result;
+            var stations = _stationsRepo.GetAllAsync().Result.Take(8);
             var doc = new XDocument(
                 new XDeclaration("1.0", "UTF-8", "yes"),
                 new XElement("ListOfItems", 

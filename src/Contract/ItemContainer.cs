@@ -7,7 +7,7 @@ using System.Xml.Serialization;
 using Microsoft.Extensions.Logging;
 using VtnrNetRadioServer.Contract;
 
-namespace VtnrNetRadioServer.Repositories
+namespace VtnrNetRadioServer.Contract
 {
     public class ItemContainer
     {

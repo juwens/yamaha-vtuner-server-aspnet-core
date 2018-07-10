@@ -7,10 +7,10 @@
     <RuntimeIdentifiers>win10-x64;debian.8-arm;debian-arm;linux-arm</RuntimeIdentifiers>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Folder Include="Middleware\" />
-    <Folder Include="wwwroot\" />
-  </ItemGroup>
+  <!-- <ItemGroup> -->
+    <!-- <Folder Include="Middleware\" /> -->
+    <!-- <Folder Include="wwwroot\" /> -->
+  <!-- </ItemGroup> -->
 
   <ItemGroup>
     <PackageReference Include="Libuv" Version="*" />

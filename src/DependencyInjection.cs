@@ -8,12 +8,13 @@ using VtnrNetRadioServer.Contract;
 using VtnrNetRadioServer.DnsServer2;
 using VtnrNetRadioServer.Helper;
 using VtnrNetRadioServer.Repositories;
+using VtnrNetRadioServer.Services;
 
 namespace VtnrNetRadioServer
 {
     static class DependencyInjection
     {
-        private static SationsRepository_FirebaseSync _fbSync;
+        private static FirebaseSyncService _fbSync;
         private static DnsServer _dnsServer;
 
         public static void AddVtunerServices(this IServiceCollection services)
@@ -23,10 +24,9 @@ namespace VtnrNetRadioServer
 
             services.AddSingleton<Flurl.Http.IFlurlClient, Flurl.Http.FlurlClient>();
 
-            services.AddSingleton<IStationsRepository2, StationsRepository_InMemory>();
-            services.AddSingleton<IStationsRepository>(x => x.GetService<IStationsRepository2>());
+            services.AddSingleton<IStationsRepository, StationsRepository_InMemory>();
 
-            services.AddSingleton<SationsRepository_FirebaseSync>();
+            services.AddSingleton<FirebaseSyncService>();
             services.AddTransient<ForwardingDnsServer>();
             services.AddTransient<NetworkInterfaceHelper>();
         }
@@ -35,7 +35,7 @@ namespace VtnrNetRadioServer
         {
             var logger = serviceProvider.GetService<ILoggerFactory>().CreateLogger("DependencyInjection");
 
-            _fbSync = serviceProvider.GetService<SationsRepository_FirebaseSync>();
+            _fbSync = serviceProvider.GetService<FirebaseSyncService>();
 
             try
             {
