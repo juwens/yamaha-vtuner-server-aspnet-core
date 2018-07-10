@@ -1,4 +1,5 @@
-@model IEnumerable<VtnrNetRadioServer.Repositories.ItemContainer>
+@page
+@model VtnrNetRadioServer.Pages.IndexModel
 @{
     Layout = "_Layout";
 }
@@ -17,7 +18,7 @@
         padding: 0; 
     }
 </style>
-    <form asp-controller="Stations" asp-action="Add" method="POST">
+    <form method="POST" asp-antiforgery="false">
         <div id="add-form">
             <input 
                 style="width: 40%;"
@@ -30,12 +31,13 @@
                 name="url" 
                 value="station-url" />
             <button 
+                asp-page-handler="Add"
                 style="width: 10%;"
                 class="mdi mdi-plus-circle mdi-24px"></button>
         </div>
     </form>
 <div>    
-    @foreach (VtnrNetRadioServer.Repositories.ItemContainer itemContainer in Model)
+    @foreach (VtnrNetRadioServer.Repositories.ItemContainer itemContainer in Model.Stations)
     {
         <hr />
         
@@ -46,16 +48,16 @@
             </span>
 
             <div style="display: flex; flex-grow: 0;">
-                <form asp-action="Edit" asp-route-id="@itemContainer.Key" method="GET" asp-anti-forgery="false">
-                    <button  class="mdi mdi-pencil-circle mdi-24px" style="margin: 0 5px;" />
-                </form>
+                <a asp-page="./EditStation" asp-route-id="@itemContainer.Key"
+                    class="mdi mdi-pencil-circle mdi-24px"
+                    style="margin: 0 5px;color: black;" ></a>
                 
-                <form asp-controller="Stations" method="POST">
+                <form method="POST" asp-antiforgery="false">
                     <input type="hidden" name="id" value="@itemContainer.Key" />
-                    <button asp-action="Down" class="mdi mdi-arrow-down-bold-circle mdi-24px" style="margin: 0 5px;" />
-                    <button asp-action="Up" class="mdi mdi-arrow-up-bold-circle mdi-24px" style="margin: 0 5px;" />
+                    <button asp-page-handler="Down" class="mdi mdi-arrow-down-bold-circle mdi-24px" style="margin: 0 5px;" />
+                    <button asp-page-handler="Up" class="mdi mdi-arrow-up-bold-circle mdi-24px" style="margin: 0 5px;" />
                     <button 
-                            asp-action="Delete" 
+                            asp-page-handler="Delete" 
                             class="mdi mdi-close-circle mdi-24px" 
                             style="margin: 0 5px;"
                             onclick="return confirm('Are you sure you want to delete?')"/>

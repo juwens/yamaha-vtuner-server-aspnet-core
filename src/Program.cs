@@ -51,12 +51,6 @@ namespace VtnrNetRadioServer
                 })
                 .Configure((app) =>
                 {
-                    app.Use(async (context, next) => {
-                        var url = Microsoft.AspNetCore.Http.Extensions.UriHelper.GetDisplayUrl(context.Request);
-                        logger.LogInformation(string.Format("{0} {1}", context.Request.Method, url));
-                        await next.Invoke();
-                    });
-
                     app.UseMvcWithDefaultRoute();
                     app.UseResponseBuffering();
                     app.UseResponseCompression();
